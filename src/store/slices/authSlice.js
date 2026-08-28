@@ -40,15 +40,27 @@ export const register = createAsyncThunk(
   }
 );
 
-export const logout = createAsyncThunk('auth/logout', async () => {
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  if (user?.refreshToken) {
-    await api.post('/auth/logout', null, {
-      headers: { 'Refresh-Token': user.refreshToken }
-    });
+export const logout = createAsyncThunk(
+  'auth/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      const user = storedUser ? JSON.parse(storedUser) : null;
+
+      if (user?.refreshToken) {
+        await api.post('/auth/logout', null, {
+          headers: { 'Refresh-Token': user.refreshToken },
+        });
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Logout request failed'
+      );
+    } finally {
+      localStorage.removeItem('user');
+    }
   }
-  localStorage.removeItem('user');
-});
+);
 
 const authSlice = createSlice({
   name: 'auth',
@@ -95,6 +107,11 @@ const authSlice = createSlice({
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
         state.isAuthenticated = false;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.user = null;
+        state.isAuthenticated = false;
+        state.error = action.payload;
       });
   },
 });

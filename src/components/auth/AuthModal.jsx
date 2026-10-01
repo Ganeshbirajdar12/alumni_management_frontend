@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, register, clearError } from '../../store/slices/authSlice';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const AuthModal = ({ mode: initialMode, onClose, onSwitchMode }) => {
   const [mode, setMode] = useState(initialMode);
@@ -18,6 +19,8 @@ const AuthModal = ({ mode: initialMode, onClose, onSwitchMode }) => {
   const dispatch = useDispatch();
   const { isLoading, error } = useSelector((state) => state.auth);
 
+  const navigate = useNavigate();
+   
   useEffect(() => {
     setMode(initialMode);
   }, [initialMode]);
@@ -33,27 +36,36 @@ const AuthModal = ({ mode: initialMode, onClose, onSwitchMode }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (mode === 'login') {
-      const result = await dispatch(login({
-        email: formData.email,
-        password: formData.password,
-      }));
-      if (!result.error) {
-        toast.success('Welcome back!');
-        onClose();
-      }
-    } else {
-      // Registration — role is ALWAYS ROLE_STUDENT
-      const result = await dispatch(register(formData));
-      if (!result.error) {
-        toast.success('Account created! Welcome to AlumniHub 🎓');
-        onClose();
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  if (mode === 'login') {
+    const result = await dispatch(login({
+      email: formData.email,
+      password: formData.password,
+    }));
+    if (!result.error) {
+      toast.success('Welcome back!');
+      onClose();
+
+      // ⬇️ NEW: Redirect by role
+      const userRole = result.payload?.user?.role;
+      if (userRole === 'ROLE_SUPER_ADMIN' || userRole === 'ROLE_ADMIN') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/dashboard');
       }
     }
-  };
+  } else {
+    const result = await dispatch(register(formData));
+    if (!result.error) {
+      toast.success('Account created! Welcome to AlumniHub 🎓');
+      onClose();
+      // Register always creates STUDENT → go to normal dashboard
+      navigate('/dashboard');
+    }
+  }
+};
 
   const switchMode = (newMode) => {
     setMode(newMode);
@@ -74,8 +86,8 @@ const AuthModal = ({ mode: initialMode, onClose, onSwitchMode }) => {
             {mode === 'login' ? 'Welcome Back' : 'Join AlumniHub'}
           </h2>
           <p className="auth-modal-subtitle">
-            {mode === 'login' 
-              ? 'Sign in to your account to continue' 
+            {mode === 'login'
+              ? 'Sign in to your account to continue'
               : 'Create your student account to get started'}
           </p>
         </div>
@@ -179,7 +191,7 @@ const AuthModal = ({ mode: initialMode, onClose, onSwitchMode }) => {
                   <span style={{ fontSize: '16px' }}>ℹ️</span>
                   <div>
                     <strong>Student Account</strong><br />
-                    You'll be registered as a <strong>Student</strong>. Once you graduate, 
+                    You'll be registered as a <strong>Student</strong>. Once you graduate,
                     your account will be upgraded to <strong>Alumni</strong> status.
                   </div>
                 </div>
@@ -217,8 +229,8 @@ const AuthModal = ({ mode: initialMode, onClose, onSwitchMode }) => {
               className="auth-submit-btn"
               disabled={isLoading}
             >
-              {isLoading 
-                ? (mode === 'login' ? 'Signing in...' : 'Creating account...') 
+              {isLoading
+                ? (mode === 'login' ? 'Signing in...' : 'Creating account...')
                 : (mode === 'login' ? 'Sign In' : 'Create Student Account')}
             </button>
 

@@ -6,6 +6,9 @@ import { store } from './store/store';
 import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import ProfilePage from './pages/ProfilePage';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import ManageAdminsPage from './pages/admin/ManageAdminsPage';
+import AuditLogsPage from './pages/admin/AuditLogsPage';
 import AdminPromotionsPage from './pages/AdminPromotionsPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
@@ -28,10 +31,64 @@ function App() {
           }}
         />
         <Routes>
+          {/* Public */}
           <Route path="/" element={<LandingPage />} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="/admin/promotions" element={<ProtectedRoute><AdminPromotionsPage /></ProtectedRoute>} />
+
+          {/* Student / Alumni */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin + Super Admin */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/promotions"
+            element={
+              <ProtectedRoute allowedRoles={['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']}>
+                <AdminPromotionsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Super Admin ONLY */}
+          <Route
+            path="/admin/team"
+            element={
+              <ProtectedRoute allowedRoles={['ROLE_SUPER_ADMIN']}>
+                <ManageAdminsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/audit-logs"
+            element={
+              <ProtectedRoute allowedRoles={['ROLE_SUPER_ADMIN']}>
+                <AuditLogsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>

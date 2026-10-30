@@ -13,7 +13,6 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
 
   const role = user?.user?.role;
-  const isAlumni = role === 'ROLE_ALUMNI';
   const isAdmin = role === 'ROLE_ADMIN' || role === 'ROLE_SUPER_ADMIN';
   const isSuperAdmin = role === 'ROLE_SUPER_ADMIN';
 
@@ -46,7 +45,6 @@ const Navbar = () => {
   const isActive = (path) =>
     location.pathname === path || location.pathname.startsWith(path + '/');
 
-  // Determine home path based on role
   const dashboardPath = isAdmin ? '/admin/dashboard' : '/dashboard';
 
   return (
@@ -71,6 +69,9 @@ const Navbar = () => {
                 </NavLink>
                 <NavLink to="/events" isActive={isActive('/events')}>
                   Events
+                </NavLink>
+                <NavLink to="/directory" isActive={isActive('/directory')}>
+                  Directory
                 </NavLink>
                 {isSuperAdmin && (
                   <>
@@ -154,6 +155,11 @@ const Navbar = () => {
                           label="My Events"
                           onClick={() => navigate('/my-events')}
                         />
+                        <DropdownItem
+                          icon="🔍"
+                          label="Directory"
+                          onClick={() => navigate('/directory')}
+                        />
                       </>
                     )}
 
@@ -168,6 +174,11 @@ const Navbar = () => {
                           icon="📅"
                           label="Events"
                           onClick={() => navigate('/events')}
+                        />
+                        <DropdownItem
+                          icon="🔍"
+                          label="Directory"
+                          onClick={() => navigate('/directory')}
                         />
                       </>
                     )}
@@ -201,6 +212,7 @@ const Navbar = () => {
               <MobileLink to="/admin/dashboard">Dashboard</MobileLink>
               <MobileLink to="/admin/promotions">Promotions</MobileLink>
               <MobileLink to="/events">Events</MobileLink>
+              <MobileLink to="/directory">Directory</MobileLink>
               {isSuperAdmin && (
                 <>
                   <MobileLink to="/admin/team">Admins</MobileLink>

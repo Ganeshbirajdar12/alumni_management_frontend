@@ -2,7 +2,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import profileReducer from './slices/profileSlice';
 import adminReducer from './slices/adminSlice';
-import eventReducer from './slices/eventSlice'
+import eventReducer from './slices/eventSlice';
+import directoryReducer from './slices/directorySlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     profile: profileReducer,
     admin: adminReducer,
     event: eventReducer,
+    directory: directoryReducer,
   },
 });

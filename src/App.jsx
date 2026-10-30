@@ -16,6 +16,8 @@ import CreateEventPage from './pages/events/CreateEventPage';
 import EditEventPage from './pages/events/EditEventPage';
 import MyEventsPage from './pages/events/MyEventsPage';
 import ManageAttendancePage from './pages/events/ManageAttendancePage';
+import DirectoryPage from './pages/directory/DirectoryPage';
+import AlumniProfilePage from './pages/directory/AlumniProfilePage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 function App() {
@@ -37,7 +39,6 @@ function App() {
           }}
         />
         <Routes>
-          {/* Public */}
           <Route path="/" element={<LandingPage />} />
 
           {/* User */}
@@ -52,6 +53,10 @@ function App() {
           <Route path="/events/:id/attendance" element={<ProtectedRoute><ManageAttendancePage /></ProtectedRoute>} />
           <Route path="/my-events" element={<ProtectedRoute><MyEventsPage /></ProtectedRoute>} />
 
+          {/* Directory */}
+          <Route path="/directory" element={<ProtectedRoute><DirectoryPage /></ProtectedRoute>} />
+          <Route path="/directory/:id" element={<ProtectedRoute><AlumniProfilePage /></ProtectedRoute>} />
+
           {/* Admin + Super Admin */}
           <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']}><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/promotions" element={<ProtectedRoute allowedRoles={['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']}><AdminPromotionsPage /></ProtectedRoute>} />
@@ -60,7 +65,6 @@ function App() {
           <Route path="/admin/team" element={<ProtectedRoute allowedRoles={['ROLE_SUPER_ADMIN']}><ManageAdminsPage /></ProtectedRoute>} />
           <Route path="/admin/audit-logs" element={<ProtectedRoute allowedRoles={['ROLE_SUPER_ADMIN']}><AuditLogsPage /></ProtectedRoute>} />
 
-          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
